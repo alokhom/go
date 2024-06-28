@@ -5,12 +5,17 @@ FROM golang:1.22
 WORKDIR /app
 
 # Download Go modules
-COPY go.mod ./
-RUN go mod download
+#COPY go.mod ./
+#RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/reference/dockerfile/#copy
 COPY *.go ./
+
+RUN rm -f go.mod rm go.sum
+
+# initialize Go modules
+RUN go mod init app
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /web
