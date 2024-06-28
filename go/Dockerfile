@@ -22,5 +22,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /web
 # https://docs.docker.com/reference/dockerfile/#expose
 EXPOSE 8080
 
-# Run
+# Run out
 CMD ["/web"]
