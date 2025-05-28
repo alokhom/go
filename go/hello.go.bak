@@ -1,0 +1,180 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
+)
+
+const url = "https://services.explorecalifornia.org/json/tours.php"
+
+func main() {
+
+	t := time.Now()
+	fmt.Printf("Current time: %s\n", t.Format(time.RFC1123))
+	fmt.Printf("Current time: %s\n", t.Format(time.ANSIC))
+
+	tomorrow := t.Add(24 * time.Hour)
+	fmt.Printf("Current time: %s\n", tomorrow)
+
+	tFormat := t.Format("Mon 2006-01-02 15:04:05")
+	fmt.Printf("Current time: %s\n", tFormat)
+
+	var colours [3]string
+	colours[0] = "red"
+	colours[1] = "green"
+	colours[2] = "blue"
+	fmt.Printf("Colours: %v\n", colours)
+
+	var numbers = [3]int{1, 2, 3}
+	fmt.Printf("Numbers: %v\n", numbers)
+
+	//slice
+	var colours1 = make([]string, 0, 3)
+	colours1 = append(colours1, "red")
+	colours1 = append(colours1, "green")
+	fmt.Printf("Colours1: %v\n", colours1)
+
+	colours1 = remove(colours1, 0)
+	fmt.Printf("Colours1: %v\n", colours1)
+
+	sort.Strings(colours1)
+	fmt.Println(colours1)
+
+	// map
+	states := make(map[string]string)
+	states["CA"] = "California"
+	states["NY"] = "New York"
+	states["TX"] = "Texas"
+	fmt.Printf("States: %v\n", states)
+	for k, v := range states {
+		fmt.Printf("Key: %s, Value: %s\n", k, v)
+	}
+
+	//slice
+	keys := make([]string, len(states))
+	i := 0
+	for k := range states {
+		keys[i] = k
+		i++
+	}
+	sort.Strings(keys)
+	fmt.Println("\nSorted")
+
+	for i := range keys {
+		fmt.Println(states[keys[i]])
+	}
+
+	//file io
+	fileName := "./hello.txt"
+	file, err := os.Create(fileName)
+	defer file.Close()
+	checkErr(err)
+	length, err := io.WriteString(file, "Hello, World!")
+	fmt.Printf("Wrote to a file %v\n", length)
+
+	//read file
+	readFile(fileName)
+
+	//http
+	content := readhttpcontent()
+	fmt.Printf("Content: %s\n", content)
+	tours := toursFromJSON(content)
+	for _, tour := range tours {
+		price, _ := strconv.ParseFloat(tour.Price, 16) // unquote the price string
+		fmt.Printf("Tour: %s, Price: %.2f\n", tour.Name, price)
+	}
+	//http server
+	http.HandleFunc("/", getRoot)
+	http.HandleFunc("/headers", headers)
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.ListenAndServe(":8081", nil)
+
+}
+
+// webservers
+func getRoot(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Hello, World!")
+	io.WriteString(w, "Hello, World!")
+}
+func headers(w http.ResponseWriter, r *http.Request) {
+	for name, values := range r.Header {
+		// Loop over all values for the name.
+		for _, value := range values {
+			fmt.Printf("%s: %s\n", name, value)
+		}
+	}
+
+}
+
+// read a web url
+func readhttpcontent() string {
+	client := http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	checkErr(err)
+	req.Header.Set("User-Agent", "")
+	resp, err := client.Do(req)
+	checkErr(err)
+	defer resp.Body.Close()
+	fmt.Printf("Response type: %T\n", resp)
+	bytes, err := io.ReadAll(resp.Body)
+	checkErr(err)
+	content := string(bytes)
+	fmt.Print(content)
+	return content
+}
+
+// file io
+func readFile(fileName string) {
+	file, err := os.Open(fileName)
+	checkErr(err)
+	defer file.Close()
+
+	// Read the file
+	content, err := io.ReadAll(file)
+	checkErr(err)
+
+	// Print the content
+	fmt.Println(string(content))
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func remove(slice []string, i int) []string {
+	return append(slice[:i], slice[i+1:]...)
+}
+
+// func swap(a *int, b *int) {
+// 	*a, *b = *b, *a
+// }
+
+func toursFromJSON(content string) []Tour {
+	tours := make([]Tour, 0) // initialize a slice of Tour structs is empty and final size is unknown
+	//json decoder to decode the JSON content
+	decoder := json.NewDecoder(strings.NewReader(content))
+	_, err := decoder.Token() // read the opening bracket
+	checkErr(err)
+	// decode each tour into the struct
+	var tour Tour
+	for decoder.More() { //wild style for loop
+		err := decoder.Decode(&tour) // decode each tour into the struct
+		checkErr(err)
+		tours = append(tours, tour) // append the tour to the slice
+	}
+	return tours
+}
+
+type Tour struct {
+	Name, Price string
+}
