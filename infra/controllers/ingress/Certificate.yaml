@@ -13,8 +13,8 @@ spec:
   dnsNames:
     - "letsgetyoufood.no"
     - "*.letsgetyoufood.no"
-  ipAddresses:
-    - 134.209.137.137
+  # ipAddresses:
+  #   - 134.209.137.137
   # Issuer references are always required.
   issuerRef:
     # ca issuer cert
