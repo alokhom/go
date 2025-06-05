@@ -31,10 +31,10 @@ jobs:
       run: cd go && go mod verify
     
     - name: Build
-      run: go env -w GO111MODULE=off && cd go && go build -v .
+      run: cd go && go build -v .
 
     - name: Test
-      run: go env -w GO111MODULE=off && cd go && go test -v .
+      run: cd go && go test -v .
 
 
     - name: Login to Docker Hub
