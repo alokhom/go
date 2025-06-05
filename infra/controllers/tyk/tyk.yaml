@@ -158,7 +158,7 @@ spec:
       imageRegistry: ""
 
       # Choose the storageType for Tyk. [ "mongo", "postgres" ]
-      storageType: redis
+      storageType: mongo
       redis:
         # The addrs value will allow you to set your Redis addresses. If you are
         # using a redis cluster, you can list the endpoints of the redis instances
