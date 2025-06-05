@@ -178,7 +178,7 @@ spec:
         useSSL: false
         # For tyk-simple-mongo (no auth)
         # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
-        mongoURL: "mongodb://user1:password1@mongo.tyk.svc:27017/tykdasbhdb"
+        mongoURL: "mongodb://user1:password1@mongodb.tyk.svc:27017/tykdasbhdb"
         # mongo-go driver is supported for Tyk 5.0.2+.
         # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
         # For MongoDB versions prior to 4.4, please use the mgo driver.
