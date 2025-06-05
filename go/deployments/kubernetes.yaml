@@ -15,6 +15,9 @@ spec:
     spec:
       containers:
       - name: example-go
-        image: goimage
+        image: ghcr.io/alokhom/oci-repo/goimage
         ports:
         - containerPort: 8000
+      imagePullSecrets:
+      - name: ocicred
+---
