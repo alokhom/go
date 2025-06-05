@@ -11,8 +11,8 @@ spec:
   isCA: false
   commonName: letsgetyoufood.no
   dnsNames:
-    - letsgetyoufood.no
-    - *.letsgetyoufood.no
+    - "letsgetyoufood.no"
+    - "*.letsgetyoufood.no"
   ipAddresses:
     - 134.209.137.137
   # Issuer references are always required.
