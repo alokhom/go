@@ -172,6 +172,43 @@ spec:
         # Redis password
         # If you're using Bitnami Redis chart please input your password in the field below
         pass: "redispassword"
+      # Please check https://tyk.io/docs/planning-for-production/database-settings/mongodb/#supported-versions
+      # for the list of supported MongoDB versions.
+      mongo:
+        useSSL: false
+        # For tyk-simple-mongo (no auth)
+        # mongoURL: mongodb://mongo.tyk.svc:27017/tyk_analytics
+        mongoURL: "mongodb://user1:password1@mongo.tyk.svc:27017/tykdasbhdb"
+        # mongo-go driver is supported for Tyk 5.0.2+.
+        # We recommend using the mongo-go driver if you are using MongoDB 4.4.x+.
+        # For MongoDB versions prior to 4.4, please use the mgo driver.
+        # Since Tyk 5.3 the default driver is mongo-go.
+        driver: mongo-go
+
+        # Connection URL can also be set using a secret. Provide the name of the secret and key below.
+        # connectionURLSecret:
+        #   name: ""
+        #   keyName: ""
+    dashboard:
+      ingress:
+        # enabled specifies whether ingress is enabled or not.
+        # Set it to true to enable Ingress for Tyk Dashboard Service.
+        enabled: true
+
+        # className specifies your ingress controller class name below
+        className: "nginx"
+
+        # annotations specifies annotations to be added on Ingress resource.
+        annotations: {}
+          # kubernetes.io/ingress.class: nginx
+          # kubernetes.io/tls-acme: "true"
+
+        # hosts corresponds to the rules to be added on Ingress rules.
+        hosts:
+          - host: tyk.letsgetyoufood.no
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
