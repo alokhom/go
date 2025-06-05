@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - flux-operator.yaml
   - metrics-server.yaml
-  - ingress-nginx.yaml
   - ./kubevela
   - ./cert-manager
   - ./tyk
+  - ./ingress
