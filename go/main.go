@@ -1,59 +1,33 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"io/ioutil"
-	"os"
+	"log"
+	"net/http"
 
-	"github.com/bburaksseyhan/appdoc-api/src/pkg/client/mongodb"
-	"github.com/bburaksseyhan/appdoc-api/src/pkg/entity"
-
-	"github.com/sirupsen/logrus"
+	"github.com/gorilla/mux"
 )
 
+type ExampleRouter struct {
+	*mux.Router
+}
+
+func NewExampleRouter() *ExampleRouter {
+	r := mux.NewRouter()
+
+	fs := http.FileServer(http.Dir("./web"))
+	r.PathPrefix("/").Handler(fs)
+
+	return &ExampleRouter{
+		Router: r,
+	}
+}
+
 func main() {
+	http.Handle("/", NewExampleRouter())
 
-	appDocJSON, err := os.Open("data.json")
-
+	log.Println("Serving on port 8000")
+	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
-		logrus.Fatal("data.json an error occurred", err)
+		log.Fatalf("Server exited with: %v", err)
 	}
-
-	defer appDocJSON.Close()
-
-	appDocs := []entity.AppDoc{}
-
-	byteValue, _ := ioutil.ReadAll(appDocJSON)
-
-	//unmarshall data
-	if err := json.Unmarshal(byteValue, &appDocs); err != nil {
-		logrus.Error("unmarshall an error occurred", err)
-	}
-
-	logrus.Info("Data\n", len(appDocs))
-
-	//import mongo client
-	client, err := mongodb.ConnectMongoDb("mongodb://localhost:27017")
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
-	defer client.Disconnect(context.TODO())
-
-	collection := client.Database("AppDb").Collection("applications")
-	// Check the connection
-	if err = client.Ping(context.TODO(), nil); err != nil {
-		logrus.Fatal(err.Error())
-	}
-
-	logrus.Info("MongoDb Client connection success")
-
-	logrus.Warn("Total data count:", &appDocs)
-
-	for _, item := range appDocs {
-		collection.InsertOne(context.TODO(), item)
-	}
-
-	logrus.Info("Data import finished...")
 }

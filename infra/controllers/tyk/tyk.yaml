@@ -1,0 +1,216 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tyk
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-redis-config
+  namespace: tyk
+data:
+  maxmemory : 2mb
+---
+# Redis Insight service with name 'redisinsight-service'
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis       # name should not be 'redisinsight'
+  namespace: tyk
+                                   # since the service creates
+                                   # environment variables that
+                                   # conflicts with redisinsight
+                                   # application's environment
+                                   # variables `RI_APP_HOST` and
+                                   # `RI_APP_PORT`
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: tyk
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+       app: redis
+    spec:
+      containers:
+      - env:
+        - name: REDIS_PASSWORD
+          value: "redispassword"  # Set a strong password for Redis
+        name: redis-container
+        image: redis:alpine
+        ports:
+          - containerPort: 6379
+        resources:
+          requests:
+            cpu: "1m"
+        volumeMounts:
+          - name: data
+            mountPath: /redis-master-data
+          - name: redis-config
+            mountPath: /redis-master
+      volumes:
+      - name: redis-config
+        configMap:
+           name: my-redis-config
+      - name: data
+        emptyDir: {}
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: tyk
+  namespace: tyk
+spec:
+  interval: 24h
+  url: https://helm.tyk.io/public/helm/charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tyk-dash
+  namespace: tyk
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: tyk-dashboard
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: tyk
+        namespace: tyk
+      interval: 12h
+  values:
+    global:
+      # adminUser specifies credentials for the Tyk Dashboard admin user that will be created while bootstrapping the Tyk Dashboard.
+      # Dashboard admin information.
+      adminUser:
+        # If you don't want to store plaintext secrets for admin user in the Helm value file and would
+        # rather provide the k8s Secret externally please populate the value below
+        # You can set following fields in the secret
+        # adminUserFirstName - sets .global.adminUser.firstName
+        # adminUserLastName - sets .global.adminUser.lastName
+        # adminUserEmail - sets .global.adminUser.email
+        # adminUserPassword - sets .global.adminUser.password
+        useSecretName: ""
+
+        # firstName corresponds to the first name of the admin user that will be created during the bootstrapping process.
+        # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_FIRSTNAME
+        firstName: admin
+        # lastName corresponds to the last name of the admin user that will be created during the bootstrapping process.
+        # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_LASTNAME
+        lastName: user
+        # email corresponds to the email of the admin user that will be created during the bootstrapping process.
+        # It is used to set TYK_K8SBOOTSTRAP_TYK_ADMIN_EMAILADDRESS
+        email: default@example.com
+        # Set a password or a random one will be assigned.
+        password: "123456"
+
+      servicePorts:
+        # The port at which the dashboard service can be found
+        dashboard: 3000
+        # The port at which the gateway service can be found
+        gateway: 8080
+
+      secrets:
+        # tyk_analytics.conf tyk_api_config.secret
+        # tyk_analytics.conf shared_node_secret
+        APISecret: CHANGEME
+        # tyk_analytics.conf admin_secret
+        AdminSecret: "12345"
+        # If you don't want to store plaintext secrets in the Helm value file and would
+        # rather provide the k8s Secret externally please populate the value below
+        # You can set following fields in the secret
+        # APISecret - Sets tyk_api_config.Secret and shared_node_secret in Dashboard config file
+        # AdminSecret - Admin user secret key
+        # DashLicense - Tyk Dashboard license key
+        useSecretName: ""
+
+      tls:
+        # When true, sets the gateway protocol to HTTPS.
+        gateway: false
+        # If set to true the Dashboard will use SSL connection.
+        dashboard: false
+
+        # When true, it will install the certificate present in the templates folder, set to false when using
+        # a custom TLS certificate to avoid overwriting yours
+        useDefaultTykCertificate: true
+
+      imageRegistry: ""
+
+      # Choose the storageType for Tyk. [ "mongo", "postgres" ]
+      storageType: redis
+      redis:
+        # The addrs value will allow you to set your Redis addresses. If you are
+        # using a redis cluster, you can list the endpoints of the redis instances
+        # or use the cluster configuration endpoint.
+        # Default value: redis.{{ .Release.Namespace }}.svc:6379
+        addrs:
+          - redis.tyk.svc:6379
+        #   This is the DNS name of the redis as set when using Bitnami
+        #   - "tyk-redis-master.tyk.svc:6379"
+
+        # Redis password
+        # If you're using Bitnami Redis chart please input your password in the field below
+        pass: "redispassword"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tyk-oss
+  namespace: tyk
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: tyk-oss
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: tyk
+        namespace: tyk
+      interval: 12h
+  values:
+    redis:
+      # The addrs value will allow you to set your Redis addresses.
+      
+      # If you are using Redis (e.g. Bitnami Redis at bitnami/redis) then enter single
+      # endpoint. If using sentinel connection mode for Redis, please update the port number (typically 26379).
+      
+      # If using a Redis Cluster (e.g. bitnami/redis-cluster), you can list
+      # the endpoints of the redis instances or use the cluster configuration endpoint.
+      
+      Default value: redis.{{ .Release.Namespace }}.svc:6379
+      addrs:
+        # Example using tyk simple redis chart
+        - redis.tyk.svc:6379
+        # Example using bitnami/redis
+        # - tyk-redis-master.tyk.svc:6379
+        # # Example using bitnami/redis with sentinel
+        # - tyk-redis.tyk.svc:26379
+        # # Example using bitnami/redis-cluster
+        # - tyk-redis-redis-cluster.tyk.svc:6379
+
+      # Redis password
+      # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
+      # your password in the field below
+      pass: "redispassword"

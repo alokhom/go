@@ -1,0 +1,4 @@
+docker_build('goimage', '.', dockerfile='Dockerfile')
+allow_k8s_contexts('do-ams3-k8s-1-32-2-do-1-ams3-1748286010277')
+k8s_yaml('deployments/kubernetes.yaml')
+k8s_resource(workload='example-go', port_forwards=8000)
