@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: example-com
-  namespace: ingres-nginx
+  namespace: ingress-nginx
 spec:
   # Secret names are always required.
   secretName: letsgetyoufood-tls
