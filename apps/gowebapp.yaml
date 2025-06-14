@@ -25,7 +25,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: podinfo
-  namespace: apps
+  namespace: gowebapp
 spec:
   interval: 10m
   url: oci://ghcr.io/stefanprodan/charts/podinfo
@@ -45,6 +45,6 @@ spec:
     name: podinfo
   values:
     hpa:
-      enabled: true
-      maxReplicas: 2
+      enabled: false
+      maxReplicas: 1
       cpu: 90
