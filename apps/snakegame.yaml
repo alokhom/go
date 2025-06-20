@@ -49,13 +49,17 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  tls:
+    - hosts:
+      - '1.letsgetyoufood.no'
+      secretName: secret-letsgetyoufood
   ingressClassName: nginx
   rules:
-  - host: "letsgetyoufood.no"
+  - host: "1.letsgetyoufood.no"
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: hello-world
