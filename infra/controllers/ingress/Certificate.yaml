@@ -9,7 +9,7 @@ spec:
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   isCA: false
-  commonName: letsgetyoufood.no
+  commonName: '*.letsgetyoufood.no'
   dnsNames:
     - "letsgetyoufood.no"
     - "*.letsgetyoufood.no"
