@@ -47,7 +47,7 @@ metadata:
   name: minimal-ingress
   namespace: default
   annotations:
-    cert-manager.io/issuer: example-issuer
+    cert-manager.io/cluster-issuer: example-issuer
 spec:
   tls:
     - hosts:
