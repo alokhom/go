@@ -3,5 +3,5 @@ kind: Kustomization
 resources:
   - namespace.yaml
   #- podinfo.yaml
-  - gowebapp.yaml
+  #- gowebapp.yaml
   - snakegame.yaml
