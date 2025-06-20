@@ -51,11 +51,11 @@ metadata:
 spec:
   tls:
     - hosts:
-      - '1.letsgetyoufood.no'
+      - 'letsgetyoufood.no'
       secretName: secret-letsgetyoufood
   ingressClassName: nginx
   rules:
-  - host: "1.letsgetyoufood.no"
+  - host: "letsgetyoufood.no"
     http:
       paths:
       - path: /
