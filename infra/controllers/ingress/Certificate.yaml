@@ -16,8 +16,6 @@ spec:
     organizations:
       - cert-manager
   commonName: '*.letsgetyoufood.no'
-  emailAddresses:
-    - alok@alokcomputing.com
   dnsNames:
     - "letsgetyoufood.no"
     - "*.letsgetyoufood.no"
