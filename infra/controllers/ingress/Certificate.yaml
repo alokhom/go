@@ -5,7 +5,7 @@ metadata:
   namespace: ingress-nginx
 spec:
   # Secret names are always required.
-  secretName: letsgetyoufood-tlsx
+  secretName: letsgetyoufood-tlsno
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   isCA: false
