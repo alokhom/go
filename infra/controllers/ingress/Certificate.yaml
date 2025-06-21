@@ -14,7 +14,7 @@ spec:
     - client auth
   subject:
     organizations:
-      - cert-manager
+      - alokcomputing.com
   commonName: '*.letsgetyoufood.no'
   dnsNames:
     - "letsgetyoufood.no"
