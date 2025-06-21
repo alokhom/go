@@ -9,7 +9,7 @@ data:
     ZG9wX3YxX2NlMDEzMjViYzk4MDgzMGM5YzY3OTUyYTQxMGM3YWQ3MWJiYzBkZGFkODc2MmRkOGUyMDZiMzNhY2I2OGY4ZWU=
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: example-issuer
   namespace: ingress-nginx
