@@ -271,7 +271,7 @@ spec:
         # useSSL: true
 
         # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
-        # sslInsecureSkipVerify: false
+        sslInsecureSkipVerify: true
 
         # Path to the CA file.
         # sslCAFile: ""
