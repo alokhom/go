@@ -46,8 +46,8 @@ kind: Ingress
 metadata:
   name: minimal-ingress
   namespace: default
-  annotations:
-    cert-manager.io/cluster-issuer: example-issuer
+  # annotations:
+  #   cert-manager.io/cluster-issuer: example-issuer
 spec:
   # tls:
   #   - hosts:
