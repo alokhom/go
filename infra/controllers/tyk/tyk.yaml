@@ -1,12 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: my-redis-config
-  namespace: tyk
-data:
-  maxmemory : 2mb
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -227,7 +219,7 @@ spec:
         # Default value: redis.{{ .Release.Namespace }}.svc:6379
         addrs:
         #   Example using tyk simple redis chart
-          - redis.tyk.svc:6379
+          - redis.tyk.svc.cluster.local:6379
         #   Example using bitnami/redis
         #   - tyk-redis-master.tyk.svc:6379
         #   Example using bitnami/redis with sentinel

@@ -1,4 +1,12 @@
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-redis-config
+  namespace: tyk
+data:
+  maxmemory : 2mb
+---
 # Redis Insight service with name 'redisinsight-service'
 apiVersion: v1
 kind: Service
