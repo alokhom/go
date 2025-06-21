@@ -9,10 +9,20 @@ spec:
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   isCA: false
+  usages:
+    - server auth
+    - client auth
+  subject:
+    organizations:
+      - cert-manager
   commonName: '*.letsgetyoufood.no'
+  emailAddresses:
+    - alok@alokcomputing.com
   dnsNames:
     - "letsgetyoufood.no"
     - "*.letsgetyoufood.no"
+  ipAddresses:
+    - 206.189.243.87
   # ipAddresses:
   #   - 134.209.137.137
   # Issuer references are always required.
