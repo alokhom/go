@@ -40,28 +40,28 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: minimal-ingress
-#   namespace: default
-#   annotations:
-#     cert-manager.io/issuer: example-issuer
-# spec:
-#   tls:
-#     - hosts:
-#       - 'letsgetyoufood.no'
-#       secretName: secret-letsgetyoufood
-#   ingressClassName: nginx
-#   rules:
-#   - host: "letsgetyoufood.no"
-#     http:
-#       paths:
-#       - path: /
-#         pathType: Prefix
-#         backend:
-#           service:
-#             name: hello-world
-#             port:
-#               number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: example-issuer
+spec:
+  tls:
+    - hosts:
+      - 'letsgetyoufood.no'
+      secretName: secret-letsgetyoufood
+  ingressClassName: nginx
+  rules:
+  - host: "letsgetyoufood.no"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hello-world
+            port:
+              number: 80
