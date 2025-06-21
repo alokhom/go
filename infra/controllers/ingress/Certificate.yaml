@@ -9,12 +9,12 @@ spec:
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   isCA: false
-  usages:
-    - server auth
-    - client auth
-  subject:
-    organizations:
-      - alokcomputing.com
+  # usages:
+  #   - server auth
+  #   - client auth
+  # subject:
+  #   organizations:
+  #     - alokcomputing.com
   commonName: '*.letsgetyoufood.no'
   dnsNames:
     - "letsgetyoufood.no"
