@@ -911,7 +911,7 @@ spec:
 
         service:
           # Tyk Pump svc is disabled by default. Set it to true to enable it.
-          enabled: false
+          enabled: true
 
           # type specifies type of the service.
           type: ClusterIP
@@ -968,11 +968,11 @@ spec:
         # If you would like to use other backends such as ElasticSearch, please
         # configure the backend via environment variables.
         backend:
-          - "prometheus"
+          - "mongo"
 
         # uptimePumpBackend configures uptime Tyk Pump. ["", "mongo", "postgres"].
         # Set it to "" for disabling uptime Tyk Pump. By default, uptime pump is disabled.
-        uptimePumpBackend: ""
+        uptimePumpBackend: "mongo"
 
         # prometheusPump configures Tyk Pump to expose Prometheus metrics.
         # Please add "prometheus" to .Values.pump.backend in order to enable Prometheus Pump.
