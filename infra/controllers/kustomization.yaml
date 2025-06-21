@@ -5,5 +5,5 @@ resources:
   - metrics-server.yaml
   #- ./kubevela
   - ./cert-manager
-  #- ./tyk
   - ./ingress
+  - ./tyk

@@ -1,0 +1,60 @@
+---
+# Redis Insight service with name 'redisinsight-service'
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis       # name should not be 'redisinsight'
+  namespace: tyk
+# since the service creates
+# environment variables that
+# conflicts with redisinsight
+# application's environment
+# variables `RI_APP_HOST` and
+# `RI_APP_PORT`
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: tyk
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+       app: redis
+    spec:
+      containers:
+      - env:
+        - name: REDIS_PASSWORD
+          value: "redispassword"  # Set a strong password for Redis
+        name: redis-container
+        image: redis:alpine
+        ports:
+          - containerPort: 6379
+        resources:
+          requests:
+            cpu: "1m"
+        volumeMounts:
+          - name: data
+            mountPath: /redis-master-data
+          - name: redis-config
+            mountPath: /redis-master
+      volumes:
+      - name: redis-config
+        configMap:
+           name: my-redis-config
+      - name: data
+        emptyDir: {}
