@@ -49,10 +49,10 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: example-issuer
 spec:
-  tls:
-    - hosts:
-      - 'letsgetyoufood.no'
-      secretName: secret-letsgetyoufood
+  # tls:
+  #   - hosts:
+  #     - 'letsgetyoufood.no'
+  #     secretName: secret-letsgetyoufood
   ingressClassName: nginx
   rules:
   - host: "letsgetyoufood.no"
