@@ -173,6 +173,10 @@ spec:
         env:
         - name: REDIS_PASSWORD
           value: "redispassword"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         ports:
         - name: redis
           containerPort: 6379
@@ -201,11 +205,6 @@ spec:
             - "redis-cli -h $(hostname) ping"
           initialDelaySeconds: 20
           periodSeconds: 3
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
       #   volumeMounts:
       #   - name: conf
       #     mountPath: /conf
