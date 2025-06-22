@@ -103,7 +103,7 @@ data:
     logfile ""
     maxmemory 2mb
   slave.conf: |
-    slaveof redis-0.redis 6379
+    slaveof 10-108-0-90.redis 6379
     maxmemory 2mb
 # ---
 # apiVersion: v1
@@ -211,108 +211,91 @@ spec:
     requests:
       storage: 100Mi
   storageClassName: do-block-storage
-
-# ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: redis-cluster-2
-#   namespace: tyk
-#   labels:
-#     app: redis-cluster
-#     role: slave
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: redis-cluster
-#       role: slave
-#   template:
-#     metadata:
-#       labels:
-#         app: redis-cluster
-#         role: slave
-#     spec:
-#       initContainers:
-#       - name: init-redis
-#         image: redis:7.2.1
-#         command:
-#         - bash
-#         - "-c"
-#         - |
-#           set -ex
-#           cp /mnt/config-map/slave.conf /etc/redis.conf
-#         volumeMounts:
-#         # - name: conf
-#         #   mountPath: /etc
-#         #   subPath: redis.conf
-#         - name: config-map
-#           mountPath: /mnt/config-map
-#       containers:
-#       - name: redis
-#         image: redis:7.2.1
-#         command: ["redis-server"]
-#         args: ["/etc/redis.conf"]
-#         env:
-#         - name: REDIS_PASSWORD
-#           value: "redispassword"
-#         - name: POD_IP
-#           valueFrom:
-#             fieldRef:
-#               fieldPath: status.podIP
-#         ports:
-#         - name: redis
-#           containerPort: 6379
-#         volumeMounts:
-#         - name: data
-#           mountPath: /data
-#         - name: conf
-#           mountPath: /etc/
-#           subPath: redis.conf
-#       # containers:
-#       # - name: redis
-#       #   image: redis:5.0-rc
-#         readinessProbe:
-#           exec:
-#             command:
-#             - sh
-#             - -c
-#             - "redis-cli -h $(hostname) ping"
-#           initialDelaySeconds: 15
-#           timeoutSeconds: 5
-#         livenessProbe:
-#           exec:
-#             command:
-#             - sh
-#             - -c
-#             - "redis-cli -h $(hostname) ping"
-#           initialDelaySeconds: 20
-#           periodSeconds: 3
-#       #   volumeMounts:
-#       #   - name: conf
-#       #     mountPath: /conf
-#       #     readOnly: false
-#       #   - name: data
-#       #     mountPath: /data
-#       #     readOnly: false
-#       volumes:
-#       - name: config-map
-#         configMap:
-#           name: redis
-#           defaultMode: 0755
-#       # - name: conf
-#       #   configMap:
-#       #     name: conf
-#       #     defaultMode: 0755
-#   volumeClaimTemplates:
-#   - metadata:
-#       name: data
-#       labels:
-#         name: redis-cluster
-#     spec:
-#       storageClassName: default
-#       accessModes:
-#         - ReadWriteOnce
-#       resources:
-#         requests:
-#           storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cluster-2
+  namespace: tyk
+  labels:
+    app: redis-cluster
+    role: slave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-cluster
+      role: slave
+  template:
+    metadata:
+      labels:
+        app: redis-cluster
+        role: slave
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2.1
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          cp /mnt/config-map/slave.conf /etc/redis.conf
+          redis-server /etc/redis.conf
+        env:
+        - name: REDIS_PASSWORD
+          value: "redispassword"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        ports:
+        - name: redis
+          containerPort: 6379
+        volumeMounts:
+        - name: data-slave
+          mountPath: /data
+        - name: conf
+          mountPath: /etc/
+          subPath: redis.conf
+        - name: config-map
+          mountPath: /mnt/config-map
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 20
+          periodSeconds: 3
+      volumes:
+      - name: config-map
+        configMap:
+          name: redis
+          defaultMode: 0755
+      - name: conf
+        emptyDir: {}
+      - name: data-slave
+        persistentVolumeClaim:
+          claimName: data-slave
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-slave
+  namespace: tyk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: do-block-storage
