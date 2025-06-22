@@ -105,7 +105,7 @@ data:
     appendonly yes
     appendfilename redis.aof 
   slave.conf: |
-    slaveof 10-108-0-90.redis 6379
+    slaveof 10-108-0-102.redis 6379
     maxmemory 2mb
     masterauth cluster1234
 # ---
