@@ -302,7 +302,7 @@ spec:
 
         # If using "Redis Cluster" set enableCluster to true
         # (e.g. if using bitnami/redis-cluster)
-        enableCluster: true
+        enableCluster: false
 
         # Enables sentinel connection mode for Redis. If enabled, provide both
         # mandatory values for sentinelPass and masterName.
