@@ -18,15 +18,10 @@ metadata:
   namespace: tyk
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: tyk-dashboard
-      version: "*"
-      sourceRef:
-        kind: OCIRepository
-        name: redis
-        namespace: tyk
-      interval: 12h
+  chartRef:
+    kind: OCIRepository
+    name: redis
+    namespace: tyk
   values:
     # Copyright Broadcom, Inc. All Rights Reserved.
     # SPDX-License-Identifier: APACHE-2.0
