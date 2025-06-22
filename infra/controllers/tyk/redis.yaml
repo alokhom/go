@@ -123,90 +123,90 @@ data:
 #     appendonly yes
 #     protected-mode no
 #     maxmemory 2mb
-# ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: redis-cluster-1
-#   namespace: tyk
-#   labels:
-#     app: redis-cluster
-#     role: master
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: redis-cluster
-#       role: master
-#   template:
-#     metadata:
-#       labels:
-#         app: redis-cluster
-#         role: master
-#     spec:
-#       containers:
-#       - name: redis
-#         image: redis:7.2.1
-#         command:
-#         - bash
-#         - "-c"
-#         - |
-#           set -ex
-#           cp /mnt/config-map/master.conf /etc/redis.conf
-#           redis-server /etc/redis.conf
-#         env:
-#         - name: REDIS_PASSWORD
-#           value: "redispassword"
-#         - name: POD_IP
-#           valueFrom:
-#             fieldRef:
-#               fieldPath: status.podIP
-#         ports:
-#         - name: redis
-#           containerPort: 6379
-#         volumeMounts:
-#         - name: data
-#           mountPath: /data
-#         - name: conf
-#           mountPath: /etc/
-#           subPath: redis.conf
-#         - name: config-map
-#           mountPath: /mnt/config-map
-#         readinessProbe:
-#           exec:
-#             command:
-#             - sh
-#             - -c
-#             - "redis-cli -h $(hostname) ping"
-#           initialDelaySeconds: 15
-#           timeoutSeconds: 5
-#         livenessProbe:
-#           exec:
-#             command:
-#             - sh
-#             - -c
-#             - "redis-cli -h $(hostname) ping"
-#           initialDelaySeconds: 20
-#           periodSeconds: 3
-#       volumes:
-#       - name: config-map
-#         configMap:
-#           name: redis
-#           defaultMode: 0755
-#       - name: conf
-#         emptyDir: {}
-#   volumeClaimTemplates:
-#   - metadata:
-#       name: data
-#       labels:
-#         name: redis-cluster
-#     spec:
-#       storageClassName: do-block-storage
-#       accessModes:
-#         - ReadWriteOnce
-#       resources:
-#         requests:
-#           storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cluster-1
+  namespace: tyk
+  labels:
+    app: redis-cluster
+    role: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-cluster
+      role: master
+  template:
+    metadata:
+      labels:
+        app: redis-cluster
+        role: master
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2.1
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          cp /mnt/config-map/master.conf /etc/redis.conf
+          redis-server /etc/redis.conf
+        env:
+        - name: REDIS_PASSWORD
+          value: "redispassword"
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        ports:
+        - name: redis
+          containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: conf
+          mountPath: /etc/
+          subPath: redis.conf
+        - name: config-map
+          mountPath: /mnt/config-map
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 20
+          periodSeconds: 3
+      volumes:
+      - name: config-map
+        configMap:
+          name: redis
+          defaultMode: 0755
+      - name: conf
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        name: redis-cluster
+    spec:
+      storageClassName: do-block-storage
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
 # ---
 # apiVersion: apps/v1
 # kind: Deployment
