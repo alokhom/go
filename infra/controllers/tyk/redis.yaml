@@ -67,6 +67,7 @@ data:
 #       - name: data
 #         emptyDir: {}
 ---
+apiVersion: v1
 kind: Service
 metadata:
   name: redis
@@ -82,6 +83,7 @@ spec:
   clusterIP: None
   selector:
     app: redis-cluster
+    # role: master
 ---
 apiVersion: v1
 kind: ConfigMap
