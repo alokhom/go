@@ -144,8 +144,8 @@ spec:
         app: redis-cluster
         role: master
     spec:
-      initContainers:
-      - name: init-redis
+      containers:
+      - name: redis
         image: redis:7.2.1
         command:
         - bash
@@ -153,17 +153,7 @@ spec:
         - |
           set -ex
           cp /mnt/config-map/master.conf /etc/redis.conf
-        volumeMounts:
-        - name: conf
-          mountPath: /etc
-          subPath: redis.conf
-        - name: config-map
-          mountPath: /mnt/config-map
-      containers:
-      - name: redis
-        image: redis:7.2.1
-        command: ["redis-server"]
-        args: ["/etc/redis.conf"]
+          redis-server /etc/redis.conf"
         env:
         - name: REDIS_PASSWORD
           value: "redispassword"
@@ -180,9 +170,8 @@ spec:
         - name: conf
           mountPath: /etc/
           subPath: redis.conf
-      # containers:
-      # - name: redis
-      #   image: redis:5.0-rc
+        - name: config-map
+          mountPath: /mnt/config-map
         readinessProbe:
           exec:
             command:
@@ -199,22 +188,13 @@ spec:
             - "redis-cli -h $(hostname) ping"
           initialDelaySeconds: 20
           periodSeconds: 3
-      #   volumeMounts:
-      #   - name: conf
-      #     mountPath: /conf
-      #     readOnly: false
-      #   - name: data
-      #     mountPath: /data
-      #     readOnly: false
       volumes:
       - name: config-map
         configMap:
           name: redis
           defaultMode: 0755
-      # - name: conf
-      #   configMap:
-      #     name: conf
-      #     defaultMode: 0755
+      - name: conf
+        emptyDir: {}
   volumeClaimTemplates:
   - metadata:
       name: data
