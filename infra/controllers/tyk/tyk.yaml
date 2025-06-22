@@ -60,7 +60,8 @@ spec:
       secrets:
         # tyk_analytics.conf tyk_api_config.secret
         # tyk_analytics.conf shared_node_secret
-        APISecret: CHANGEME
+        APISecret: Xkpa64oPH6zTnLqrbXfDaPjzaJmPkwexdyE2InXmlEjsUMqqgSzSP38kPIMIxX2G0iA3qsHlpmF9zP1MAVaFaO4hVthGIweVr7pIoHYhNbRWxr030KAgNgVbn5IFTsnL
+
         # tyk_analytics.conf admin_secret
         AdminSecret: "12345"
         # If you don't want to store plaintext secrets in the Helm value file and would
@@ -226,7 +227,7 @@ spec:
 
       secrets:
         # APISecret sets secret in tyk.conf
-        APISecret: CHANGEME
+        APISecret: Xkpa64oPH6zTnLqrbXfDaPjzaJmPkwexdyE2InXmlEjsUMqqgSzSP38kPIMIxX2G0iA3qsHlpmF9zP1MAVaFaO4hVthGIweVr7pIoHYhNbRWxr030KAgNgVbn5IFTsnL
         # useSecretName can be used if you don't want to store plaintext secrets in the Helm value file and would
         # rather provide the k8s Secret externally.
         # You can set following fields in the secret
