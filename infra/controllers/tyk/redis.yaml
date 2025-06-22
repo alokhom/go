@@ -1273,7 +1273,7 @@ spec:
       ## @param replica.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `replica.affinity` is set. Allowed values: `soft` or `hard`
       ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
       ##
-      podAntiAffinityPreset: soft
+      podAntiAffinityPreset: ""
       ## Node affinity preset
       ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
       ##
