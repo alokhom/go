@@ -195,18 +195,20 @@ spec:
           defaultMode: 0755
       - name: conf
         emptyDir: {}
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-      labels:
-        name: redis-cluster
-    spec:
-      storageClassName: do-block-storage
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+  namespace: tyk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: do-block-storage
+
 # ---
 # apiVersion: apps/v1
 # kind: Deployment
