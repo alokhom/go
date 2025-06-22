@@ -92,7 +92,7 @@ spec:
         # or use the cluster configuration endpoint.
         # Default value: redis.{{ .Release.Namespace }}.svc:6379
         addrs:
-          - redis-headless.tyk.svc:6379
+          - redis.tyk.svc:6379
         #   This is the DNS name of the redis as set when using Bitnami
         #   - "tyk-redis-master.tyk.svc:6379"
 
@@ -249,7 +249,7 @@ spec:
         # Default value: redis.{{ .Release.Namespace }}.svc:6379
         addrs:
         # #   Example using tyk simple redis chart
-          - redis-headless.tyk.svc:6379
+          - redis.tyk.svc:6379
         #   Example using bitnami/redis
         #   - tyk-redis-master.tyk.svc:6379
         #   Example using bitnami/redis with sentinel
@@ -260,7 +260,7 @@ spec:
         # Redis password
         # If you're using Bitnami Redis chart (e.g. bitnami/redis) please input
         # your password in the field below
-        pass: "cluster1234"
+        pass: "redispassword"
 
         # Redis password can also be provided via a secret. Provide the name of the secret and key below.
         # passSecret:
@@ -303,7 +303,7 @@ spec:
 
         # If using "Redis Cluster" set enableCluster to true
         # (e.g. if using bitnami/redis-cluster)
-        enableCluster: true
+        # enableCluster: true
 
         # Enables sentinel connection mode for Redis. If enabled, provide both
         # mandatory values for sentinelPass and masterName.
@@ -320,8 +320,8 @@ spec:
         # By default, the database index is 0. Setting the database index is not
         # supported with redis cluster. As such, if you have enableCluster: true,
         # then this value should be omitted or explicitly set to 0.
-        # storage:
-        #   database: 0
+        storage:
+          database: 0
 
       # hashKeys is used to enable/disable key hashing.
       hashKeys: true
