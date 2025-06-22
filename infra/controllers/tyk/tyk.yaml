@@ -271,7 +271,7 @@ spec:
         # useSSL: true
 
         # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
-        sslInsecureSkipVerify: true
+        # sslInsecureSkipVerify: true
 
         # Path to the CA file.
         # sslCAFile: ""
@@ -483,7 +483,7 @@ spec:
 
         control:
           # If enabled, exposes control port of the gateway
-          enabled: false
+          enabled: true
 
           # control port of gateway
           containerPort: 9696
