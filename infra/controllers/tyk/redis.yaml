@@ -6,63 +6,229 @@ metadata:
   namespace: tyk
 data:
   maxmemory : 2mb
----
-# Redis Insight service with name 'redisinsight-service'
-apiVersion: v1
+# ---
+# # Redis Insight service with name 'redisinsight-service'
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: redis       # name should not be 'redisinsight'
+#   namespace: tyk
+# # since the service creates
+# # environment variables that
+# # conflicts with redisinsight
+# # application's environment
+# # variables `RI_APP_HOST` and
+# # `RI_APP_PORT`
+# spec:
+#   type: ClusterIP
+#   ports:
+#     - port: 6379
+#       targetPort: 6379
+#   selector:
+#     app: redis
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis
+#   namespace: tyk
+#   labels:
+#     app: redis
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redis
+#   template:
+#     metadata:
+#       labels:
+#        app: redis
+#     spec:
+#       containers:
+#       - env:
+#         - name: REDIS_PASSWORD
+#           value: "redispassword"  # Set a strong password for Redis
+#         name: redis-container
+#         image: redis:7.2.9-alpine
+#         ports:
+#           - containerPort: 6379
+#         resources:
+#           requests:
+#             cpu: "1m"
+#         volumeMounts:
+#           - name: data
+#             mountPath: /redis-master-data
+#           - name: redis-config
+#             mountPath: /redis-master
+#       volumes:
+#       - name: redis-config
+#         configMap:
+#            name: my-redis-config
+#       - name: data
+#         emptyDir: {}
+
 kind: Service
-metadata:
-  name: redis       # name should not be 'redisinsight'
-  namespace: tyk
-# since the service creates
-# environment variables that
-# conflicts with redisinsight
-# application's environment
-# variables `RI_APP_HOST` and
-# `RI_APP_PORT`
-spec:
-  type: ClusterIP
-  ports:
-    - port: 6379
-      targetPort: 6379
-  selector:
-    app: redis
----
-apiVersion: apps/v1
-kind: Deployment
 metadata:
   name: redis
   namespace: tyk
   labels:
     app: redis
 spec:
+  type: ClusterIP
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: redis
+  clusterIP: None
+  selector:
+    app: redis
+    role: master
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis
+  namespace: tyk
+data:
+  master.conf: |
+    bind 0.0.0.0
+    protected-mode yes
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile /var/run/redis_6379.pid
+    loglevel notice
+    logfile ""
+  slave.conf: |
+    slaveof redis-0.redis 6379
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf
+  namespace: tyk
+  labels:
+    app: redis-cluster
+data:
+  redis.conf: |+
+    cluster-enabled yes
+    cluster-require-full-coverage no
+    cluster-node-timeout 15000
+    cluster-config-file /data/nodes.conf
+    cluster-migration-barrier 1
+    appendonly yes
+    protected-mode no
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster
+  namespace: tyk
+  labels:
+    app: redis-cluster
+spec:
+  serviceName: redis
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: redis-cluster
   template:
     metadata:
       labels:
-       app: redis
+        app: redis-cluster
     spec:
-      containers:
-      - env:
-        - name: REDIS_PASSWORD
-          value: "redispassword"  # Set a strong password for Redis
-        name: redis-container
-        image: redis:7.2.9-alpine
-        ports:
-          - containerPort: 6379
-        resources:
-          requests:
-            cpu: "1m"
+      initContainers:
+      - name: init-redis
+        image: redis:7.2.1
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # Generate  server-id from pod ordinal index.
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          # Copy appropriate conf.d files from config-map to emptyDir.
+          if [[ $ordinal -eq 0 ]]; then
+            cp /mnt/config-map/master.conf /etc/redis.conf
+          else
+            cp /mnt/config-map/slave.conf /etc/redis.conf
+          fi
         volumeMounts:
-          - name: data
-            mountPath: /redis-master-data
-          - name: redis-config
-            mountPath: /redis-master
+        - name: conf
+          mountPath: /etc
+          subPath: redis.conf
+        - name: config-map
+          mountPath: /mnt/config-map
+      containers:
+      - name: redis
+        image: redis:7.2.1
+        command: ["redis-server"]
+        args: ["/etc/redis.conf"]
+        env:
+        - name: REDIS_PASSWORD
+          value: "redispassword"
+        ports:
+        - name: redis
+          containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: conf
+          mountPath: /etc/
+          subPath: redis.conf
+      # containers:
+      # - name: redis
+      #   image: redis:5.0-rc
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "redis-cli -h $(hostname) ping"
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      #   volumeMounts:
+      #   - name: conf
+      #     mountPath: /conf
+      #     readOnly: false
+      #   - name: data
+      #     mountPath: /data
+      #     readOnly: false
       volumes:
-      - name: redis-config
+      - name: config-map
         configMap:
-           name: my-redis-config
-      - name: data
-        emptyDir: {}
+          name: redis
+          defaultMode: 0755
+      - name: conf
+        configMap:
+          name: conf
+          defaultMode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        name: redis-cluster
+    spec:
+      storageClassName: default
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
