@@ -269,7 +269,7 @@ spec:
 
         # Enables SSL for Redis connection. Redis instance will have to support that.
         # Default value: false
-        # useSSL: false
+        useSSL: false
 
         # Allows usage of self-signed certificates when connecting to an encrypted Redis database.
         # sslInsecureSkipVerify: true
@@ -303,7 +303,7 @@ spec:
 
         # If using "Redis Cluster" set enableCluster to true
         # (e.g. if using bitnami/redis-cluster)
-        # enableCluster: false
+        enableCluster: true
 
         # Enables sentinel connection mode for Redis. If enabled, provide both
         # mandatory values for sentinelPass and masterName.
@@ -320,8 +320,8 @@ spec:
         # By default, the database index is 0. Setting the database index is not
         # supported with redis cluster. As such, if you have enableCluster: true,
         # then this value should be omitted or explicitly set to 0.
-        storage:
-          database: 0
+        # storage:
+        #   database: 0
 
       # hashKeys is used to enable/disable key hashing.
       hashKeys: true
