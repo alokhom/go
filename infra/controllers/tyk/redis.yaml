@@ -153,7 +153,7 @@ spec:
         - |
           set -ex
           cp /mnt/config-map/master.conf /etc/redis.conf
-          redis-server /etc/redis.conf"
+          redis-server /etc/redis.conf
         env:
         - name: REDIS_PASSWORD
           value: "redispassword"
