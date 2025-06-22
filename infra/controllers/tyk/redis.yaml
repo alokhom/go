@@ -81,7 +81,7 @@ spec:
     targetPort: redis
   selector:
     app: redis-cluster
-    # role: master
+    role: master
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -101,44 +101,48 @@ data:
     pidfile /var/run/redis_6379.pid
     loglevel notice
     logfile ""
+    maxmemory 2mb
   slave.conf: |
     slaveof redis-0.redis 6379
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: conf
-  namespace: tyk
-  labels:
-    app: redis-cluster
-data:
-  redis.conf: |+
-    cluster-enabled yes
-    cluster-require-full-coverage no
-    cluster-node-timeout 15000
-    cluster-config-file /data/nodes.conf
-    cluster-migration-barrier 1
-    appendonly yes
-    protected-mode no
     maxmemory 2mb
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: conf
+#   namespace: tyk
+#   labels:
+#     app: redis-cluster
+# data:
+#   redis.conf: |+
+#     cluster-enabled yes
+#     cluster-require-full-coverage no
+#     cluster-node-timeout 15000
+#     cluster-config-file /data/nodes.conf
+#     cluster-migration-barrier 1
+#     appendonly yes
+#     protected-mode no
+#     maxmemory 2mb
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: redis-cluster
+  name: redis-cluster-1
   namespace: tyk
   labels:
     app: redis-cluster
+    role: master
 spec:
-  serviceName: redis
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: redis-cluster
+      role: master
   template:
     metadata:
       labels:
         app: redis-cluster
+        role: master
     spec:
       initContainers:
       - name: init-redis
@@ -148,15 +152,7 @@ spec:
         - "-c"
         - |
           set -ex
-          # Generate  server-id from pod ordinal index.
-          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-          ordinal=${BASH_REMATCH[1]}
-          # Copy appropriate conf.d files from config-map to emptyDir.
-          if [[ $ordinal -eq 0 ]]; then
-            cp /mnt/config-map/master.conf /etc/redis.conf
-          else
-            cp /mnt/config-map/slave.conf /etc/redis.conf
-          fi
+          cp /mnt/config-map/master.conf /etc/redis.conf
         volumeMounts:
         - name: conf
           mountPath: /etc
@@ -215,10 +211,10 @@ spec:
         configMap:
           name: redis
           defaultMode: 0755
-      - name: conf
-        configMap:
-          name: conf
-          defaultMode: 0755
+      # - name: conf
+      #   configMap:
+      #     name: conf
+      #     defaultMode: 0755
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -231,3 +227,107 @@ spec:
       resources:
         requests:
           storage: 100Mi
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-cluster-2
+#   namespace: tyk
+#   labels:
+#     app: redis-cluster
+#     role: slave
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redis-cluster
+#       role: slave
+#   template:
+#     metadata:
+#       labels:
+#         app: redis-cluster
+#         role: slave
+#     spec:
+#       initContainers:
+#       - name: init-redis
+#         image: redis:7.2.1
+#         command:
+#         - bash
+#         - "-c"
+#         - |
+#           set -ex
+#           cp /mnt/config-map/slave.conf /etc/redis.conf
+#         volumeMounts:
+#         # - name: conf
+#         #   mountPath: /etc
+#         #   subPath: redis.conf
+#         - name: config-map
+#           mountPath: /mnt/config-map
+#       containers:
+#       - name: redis
+#         image: redis:7.2.1
+#         command: ["redis-server"]
+#         args: ["/etc/redis.conf"]
+#         env:
+#         - name: REDIS_PASSWORD
+#           value: "redispassword"
+#         - name: POD_IP
+#           valueFrom:
+#             fieldRef:
+#               fieldPath: status.podIP
+#         ports:
+#         - name: redis
+#           containerPort: 6379
+#         volumeMounts:
+#         - name: data
+#           mountPath: /data
+#         - name: conf
+#           mountPath: /etc/
+#           subPath: redis.conf
+#       # containers:
+#       # - name: redis
+#       #   image: redis:5.0-rc
+#         readinessProbe:
+#           exec:
+#             command:
+#             - sh
+#             - -c
+#             - "redis-cli -h $(hostname) ping"
+#           initialDelaySeconds: 15
+#           timeoutSeconds: 5
+#         livenessProbe:
+#           exec:
+#             command:
+#             - sh
+#             - -c
+#             - "redis-cli -h $(hostname) ping"
+#           initialDelaySeconds: 20
+#           periodSeconds: 3
+#       #   volumeMounts:
+#       #   - name: conf
+#       #     mountPath: /conf
+#       #     readOnly: false
+#       #   - name: data
+#       #     mountPath: /data
+#       #     readOnly: false
+#       volumes:
+#       - name: config-map
+#         configMap:
+#           name: redis
+#           defaultMode: 0755
+#       # - name: conf
+#       #   configMap:
+#       #     name: conf
+#       #     defaultMode: 0755
+#   volumeClaimTemplates:
+#   - metadata:
+#       name: data
+#       labels:
+#         name: redis-cluster
+#     spec:
+#       storageClassName: default
+#       accessModes:
+#         - ReadWriteOnce
+#       resources:
+#         requests:
+#           storage: 100Mi
