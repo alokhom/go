@@ -1,16 +1,25 @@
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
 metadata:
   name: redis
   namespace: tyk
 spec:
-  insecure: true
-  interval: 1m
-  layerSelector:
-    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
-    operation: copy
-  url: oci://registry-1.docker.io/bitnamicharts/redis
+  interval: 5m0s
+  url: oci://registry-1.docker.io/bitnamicharts/
+  type: "oci"
+# ---
+# apiVersion: source.toolkit.fluxcd.io/v1beta2
+# kind: OCIRepository
+# metadata:
+#   name: redis
+#   namespace: tyk
+# spec:
+#   insecure: true
+#   interval: 1m
+#   layerSelector:
+#     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+#     operation: copy
+#   url: oci://registry-1.docker.io/bitnamicharts/redis
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -19,10 +28,19 @@ metadata:
   namespace: tyk
 spec:
   interval: 30m
-  chartRef:
-    kind: OCIRepository
-    name: redis
-    namespace: tyk
+  chart:
+    spec:
+      chart: redis
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: redis
+        namespace: tyk
+      interval: 12h
+  # chartRef:
+  #   kind: OCIRepository
+  #   name: redis
+  #   namespace: tyk
   values:
     # Copyright Broadcom, Inc. All Rights Reserved.
     # SPDX-License-Identifier: APACHE-2.0
