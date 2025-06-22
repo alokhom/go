@@ -6,3 +6,4 @@ resources:
   - ./mongo
   - tyk.yaml
   - redis.yaml
+  - mongo-srv.yaml
