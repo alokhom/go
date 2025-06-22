@@ -742,7 +742,7 @@ spec:
       ## @param master.kind Use either Deployment, StatefulSet (default) or DaemonSet
       ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
       ##
-      kind: Deployment
+      kind: StatefulSet
       ## @param master.schedulerName Alternate scheduler for Redis(R) master pods
       ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
       ##
