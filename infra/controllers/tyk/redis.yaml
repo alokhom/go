@@ -201,7 +201,7 @@ spec:
       labels:
         name: redis-cluster
     spec:
-      storageClassName: default
+      storageClassName: do-block-storage
       accessModes:
         - ReadWriteOnce
       resources:
