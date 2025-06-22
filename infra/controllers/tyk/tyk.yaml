@@ -246,9 +246,9 @@ spec:
         # the endpoints of the redis instances or use the cluster configuration endpoint.
         #
         # Default value: redis.{{ .Release.Namespace }}.svc:6379
-        addrs:
-        #   Example using tyk simple redis chart
-          - redis.tyk.svc.cluster.local:6379
+        # addrs:
+        # #   Example using tyk simple redis chart
+        #   - redis.tyk.svc:6379
         #   Example using bitnami/redis
         #   - tyk-redis-master.tyk.svc:6379
         #   Example using bitnami/redis with sentinel
