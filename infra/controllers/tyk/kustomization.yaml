@@ -5,5 +5,5 @@ resources:
   - ./crds
   - ./mongo
   - tyk.yaml
-  #- redis.yaml
+  - redis.yaml
   - mongo-srv.yaml
