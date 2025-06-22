@@ -195,6 +195,9 @@ spec:
           defaultMode: 0755
       - name: conf
         emptyDir: {}
+      - name: data
+        persistentVolumeClaim:
+          claimName: data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
