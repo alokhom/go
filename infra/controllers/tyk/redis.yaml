@@ -7,7 +7,7 @@ metadata:
 spec:
   insecure: true
   interval: 1m
-  url: oci://registry-1.docker.io/bitnamicharts/redis
+  url: oci://registry-1.docker.io/bitnamicharts
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
