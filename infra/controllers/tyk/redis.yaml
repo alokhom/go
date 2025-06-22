@@ -1179,11 +1179,11 @@ spec:
       ## Example:
       resources:
         requests:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 200m
+          memory: 128Mi
         limits:
-          cpu: 700m
-          memory: 700Mi
+          cpu: 300m
+          memory: 400Mi
       ##
       # resources: {}
       ## Configure Pods Security Context
