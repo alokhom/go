@@ -396,7 +396,7 @@ spec:
       ##
       imagePullSecrets: []
       defaultStorageClass: "do-block-storage"
-      storageClass: ""
+      storageClass: "do-block-storage"
       ## Security parameters
       ##
       security:
