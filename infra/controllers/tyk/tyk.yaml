@@ -246,9 +246,9 @@ spec:
         # the endpoints of the redis instances or use the cluster configuration endpoint.
         #
         # Default value: redis.{{ .Release.Namespace }}.svc:6379
-        # addrs:
+        addrs:
         # #   Example using tyk simple redis chart
-        #   - redis.tyk.svc:6379
+          - redis.tyk.svc:6379
         #   Example using bitnami/redis
         #   - tyk-redis-master.tyk.svc:6379
         #   Example using bitnami/redis with sentinel
@@ -302,7 +302,7 @@ spec:
 
         # If using "Redis Cluster" set enableCluster to true
         # (e.g. if using bitnami/redis-cluster)
-        enableCluster: false
+        enableCluster: true
 
         # Enables sentinel connection mode for Redis. If enabled, provide both
         # mandatory values for sentinelPass and masterName.
