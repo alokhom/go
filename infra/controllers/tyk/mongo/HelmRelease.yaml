@@ -92,13 +92,13 @@ spec:
       labels: {}
 
     ## Resource limits and requests
-    resources: {}
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
     ## Custom startup probe (overwrites default startup probe)
     customStartupProbe: {}
@@ -198,13 +198,13 @@ spec:
         # Suffix of the arbiters headless service name
         headlessServiceSuffix: arbiter
         ## Resource limits and requests for the arbiter
-        resources: {}
-          # limits:
-          #   cpu: 100m
-          #   memory: 128Mi
-          # requests:
-          #   cpu: 100m
-          #   memory: 128Mi
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
         ## Additional node selector
         nodeSelector: {}
         ## Pod tolerations
