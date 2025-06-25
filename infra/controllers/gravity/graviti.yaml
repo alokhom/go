@@ -692,7 +692,7 @@ spec:
           service:
             externalPort: 92
             internalPort: 18092
-          #  appProtocol: http
+            appProtocol: http
           ingress:
             enabled: true
             ingressClassName: "nginx"
@@ -707,13 +707,14 @@ spec:
               nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
               kubernetes.io/app-root: /api
               kubernetes.io/rewrite-target: /api
-              nginx.ingress.kubernetes.io/configuration-snippet: "etag on;\nproxy_pass_header ETag;\nproxy_set_header if-match \"\";\n"
+              nginx.ingress.kubernetes.io/configuration-snippet: |
+                "etag on;\nproxy_pass_header ETag;\nproxy_set_header if-match \"\";\n"
               # kubernetes.io/tls-acme: "true"
               # tls:
               # Secrets must be manually created in the namespace.
-             #  - hosts:
-             #      - apim.example.com
-             #    secretName: api-custom-cert
+              #  - hosts:
+              #      - apim.example.com
+              #    secretName: api-custom-cert
         subscription:
           enabled: true
           pre-expiration-notification-schedule: 15,10,5
@@ -730,12 +731,12 @@ spec:
               enabled: true
               ingressClassName: "nginx"
               pathType: Prefix
-             path: /management/_(.*)
-             hosts:
-               - apim.letsgetyoufood.no
-             annotations:
-    #            kubernetes.io/ingress.class: nginx
-               nginx.ingress.kubernetes.io/rewrite-target: /_$1
+              path: /management/_(.*)
+              hosts:
+                - apim.letsgetyoufood.no
+              annotations:
+                # kubernetes.io/ingress.class: nginx
+                nginx.ingress.kubernetes.io/rewrite-target: /_$1
             service:
     #       If you choose to enable this service, you'll need to expose the technical api
     #       on an accessible host outside of the pod: api.http.services.core.http.host
