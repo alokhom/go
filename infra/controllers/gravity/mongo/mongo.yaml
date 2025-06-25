@@ -22,7 +22,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - pool-pno4qqu2l-lns6b
+                - pool-al4lv79el-twm9s
       containers:
       - name: mongos
         image: mongo
