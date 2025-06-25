@@ -5,4 +5,5 @@ metadata:
   namespace: graviti
 spec:
   interval: 5m0s
-  url: https://groundhog2k.github.io/helm-charts/
+  type: oci
+  url: oci://registry-1.docker.io/bitnamicharts/mongodb
