@@ -97,7 +97,7 @@ spec:
         cpu: 100m
         memory: 128Mi
       requests:
-        cpu: 100m
+        cpu: 50m
         memory: 128Mi
 
     ## Custom startup probe (overwrites default startup probe)
@@ -259,7 +259,7 @@ spec:
     ## Optional user database which is created during first startup with user and password
     userDatabase:
       ## Name of the user database
-      name: "tykdasbhdb"
+      name: "gravitee"
 
       ## Database user with full access rights
       user: "user1"

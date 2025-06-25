@@ -51,33 +51,33 @@ spec:
     # If you want to use multiple environments with different consoles/portals, you can configure the URL below.
         console:
           urls:
-    #        - orgId: DEFAULT
-    #          url: https://4-2-x-multi-console.console1.team-apim.gravitee.dev
-    #        - orgId: 6eb27b47-2560-481f-b27b-472560581fff
-    #          url: https://4-2-x-multi-console.console2.team-apim.gravitee.dev
+           - orgId: DEFAULT
+             url: https://4-2-x-multi-console.console1.team-apim.gravitee.dev
+           - orgId: 6eb27b47-2560-481f-b27b-472560581fff
+             url: https://4-2-x-multi-console.console2.team-apim.gravitee.dev
         portal:
           urls:
-    #        - envId: DEFAULT
-    #          url: https://4-2-x-multi-console.portal1.team-apim.gravitee.dev
-    #        - envId: 808a51a9-48f5-4517-8a51-a948f5e517b3
-    #          url: https://4-2-x-multi-console.portal2.team-apim.gravitee.dev
+           - envId: DEFAULT
+             url: https://4-2-x-multi-console.portal1.team-apim.gravitee.dev
+           - envId: 808a51a9-48f5-4517-8a51-a948f5e517b3
+             url: https://4-2-x-multi-console.portal2.team-apim.gravitee.dev
 
     # Create NetworkPolicy objects
     # https://kubernetes.io/docs/concepts/services-networking/network-policies/
     networkPolicy:
-    #  podSelector:
-    #    matchExpressions:
-    #      - key: app.kubernetes.io/component
-    #        operator: In
-    #        values: [ "gateway", "api", "ui", "portal" ]
-    #  policyTypes:
-    #    - Egress
-    #  egress:
-    #    - to:
-    #        - ipBlock:
-    #            cidr: 0.0.0.0/0
-    #            except:
-    #              - 169.254.169.254/32
+      podSelector:
+        matchExpressions:
+          - key: app.kubernetes.io/component
+            operator: In
+            values: [ "gateway", "api", "ui", "portal" ]
+      policyTypes:
+        - Egress
+      egress:
+        - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+                except:
+                  - 169.254.169.254/32
 
     apim:
       name: apim
@@ -644,7 +644,7 @@ spec:
       #    password: secret
       services:
         metrics:
-          enabled: false
+          enabled: true
           prometheus:
             enabled: true
         bridge:
@@ -807,7 +807,7 @@ spec:
           ingressClassName: ""
           # Used to create an Ingress record.
           hosts:
-            - apim.example.com
+            - apim.letsgetyoufood.no
           annotations:
             kubernetes.io/ingress.class: nginx
             #nginx.ingress.kubernetes.io/configuration-snippet: "etag on;\nproxy_pass_header ETag;\nproxy_pass_header if-match;\n"
@@ -825,7 +825,7 @@ spec:
           ingressClassName: ""
           # Used to create an Ingress record.
           hosts:
-            - apim.example.com
+            - apim.letsgetyoufood.no
           annotations:
             kubernetes.io/ingress.class: nginx
             # kubernetes.io/tls-acme: "true"
@@ -839,11 +839,11 @@ spec:
           path: /automation
           pathType: Prefix
           hosts:
-            - apim.example.com
-          tls:
-            - hosts:
-                - apim.example.com
-              secretName: apim.example.com
+            - apim.letsgetyoufood.no
+          # tls:
+          #   - hosts:
+          #       - apim.example.com
+          #     secretName: apim.example.com
           annotations:
             kubernetes.io/ingress.class: nginx
       resources:
@@ -897,8 +897,8 @@ spec:
           ingressClassName: ""
           path: /integration-controller(/.*)?
           pathType: Prefix
-    #      hosts:
-    #        - apim.example.com
+          hosts:
+            - apim.letsgetyoufood.no
           annotations:
             kubernetes.io/ingress.class: nginx
             nginx.ingress.kubernetes.io/proxy-read-timeout: 3600                                                                                                                                              │
@@ -1268,29 +1268,29 @@ spec:
         #     idleTimeout: 0 # in milliseconds
       management:
           http:
-          #  url: "https://bridge.example.com:18092"
-          #  # default values
-          #  keepAlive: true
-          #  idleTimeout: 30000
-          #  connectTimeout: 5000
-          #  readTimeout: 10000
-          #  useCompression: true
-          #  clearTextUpgrade: true
-          #  version: HTTP_1_1     # or HTTP_2
-          #  # retry less and less often until we reach 60s (default)
-          #  # formula is factor^attempt x delay
-          #  # in this case retry occurs like this: 2s, 3s, 4.5s, 6.7s, 10.1s, 15,2s etc.
-          #  connectionRetry:
-          #    delaySec: 2
-          #    maxDelaySec: 60
-          #    backoffFactor: 1.5 # how exponential we get to 60s (1.0 means linear)
-          #  authentication:
-          #    type: none # or basic or jwt
-          #    basic:
-          #      username: admin
-          #      password: adminadmin
-          #    jwt:
-          #      token: eyJhbGciOiJIUzI1NiI...
+            url: "https://bridge.letsgetyoufood.no:18092"
+            # default values
+            keepAlive: true
+            idleTimeout: 30000
+            connectTimeout: 5000
+            readTimeout: 10000
+            useCompression: true
+            clearTextUpgrade: true
+            version: HTTP_1_1     # or HTTP_2
+            # retry less and less often until we reach 60s (default)
+            # formula is factor^attempt x delay
+            # in this case retry occurs like this: 2s, 3s, 4.5s, 6.7s, 10.1s, 15,2s etc.
+            connectionRetry:
+              delaySec: 2
+              maxDelaySec: 60
+              backoffFactor: 1.5 # how exponential we get to 60s (1.0 means linear)
+            authentication:
+              type: none # or basic or jwt
+              basic:
+                username: admin
+                password: adminadmin
+              jwt:
+                token: eyJhbGciOiJIUzI1NiI...
           #  ssl:
           #    # defaults
           #    ### beware: since 4.4 default is false (see upgrade guide)
@@ -1344,7 +1344,7 @@ spec:
             pathType: Prefix
             path: /_(.*)
             hosts:
-              - apim.example.com
+              - apim.letsgetyoufood.no
             annotations: {}
     #            kubernetes.io/ingress.class: nginx
     #            nginx.ingress.kubernetes.io/rewrite-target: /_$1
