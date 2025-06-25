@@ -22,7 +22,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - pool-al4lv79el-twm9s
+                - pool-pno4qqu2l-lns6b
       containers:
       - name: mongos
         image: mongo
@@ -30,7 +30,7 @@ spec:
           - containerPort: 27017
         resources:
           requests:
-            memory: "400Mi"
+            memory: "200Mi"
             cpu: "0.1"
         env:
           - name: MONGO_INITDB_ROOT_USERNAME
