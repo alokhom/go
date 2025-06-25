@@ -709,14 +709,14 @@ spec:
               kubernetes.io/rewrite-target: /api
               nginx.ingress.kubernetes.io/configuration-snippet: "etag on;\nproxy_pass_header ETag;\nproxy_set_header if-match \"\";\n"
               # kubernetes.io/tls-acme: "true"
-            # tls:
+              # tls:
               # Secrets must be manually created in the namespace.
-            #  - hosts:
-            #      - apim.example.com
-            #    secretName: api-custom-cert
+             #  - hosts:
+             #      - apim.example.com
+             #    secretName: api-custom-cert
         subscription:
           enabled: true
-    #     pre-expiration-notification-schedule: 15,10,5
+          pre-expiration-notification-schedule: 15,10,5
       http:
         services:
           core:
