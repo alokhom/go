@@ -37,8 +37,8 @@ spec:
       ##   - myRegistryKeySecretName
       ##
       imagePullSecrets: []
-      defaultStorageClass: ""
-      storageClass: ""
+      defaultStorageClass: "do-block-storage-xfs"
+      storageClass: "do-block-storage-xfs"
       ## Security parameters
       ##
       security:
@@ -182,7 +182,7 @@ spec:
     architecture: standalone
     ## @param useStatefulSet Set to true to use a StatefulSet instead of a Deployment (only when `architecture=standalone`)
     ##
-    useStatefulSet: false
+    useStatefulSet: true
     ## MongoDB(&reg;) Authentication parameters
     ##
     auth:
@@ -314,15 +314,15 @@ spec:
       resourcesPreset: "nano"
       ## @param tls.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
       ## Example:
-      ## resources:
-      ##   requests:
-      ##     cpu: 2
-      ##     memory: 512Mi
-      ##   limits:
-      ##     cpu: 3
-      ##     memory: 1024Mi
+      resources:
+        requests:
+          cpu: 0.1
+          memory: 90Mi
+        limits:
+          cpu: 0.1
+          memory: 100Mi
       ##
-      resources: {}
+      # resources: {}
       ## Init Container securityContext
       ## ref: https://kubernetes.io/docs/concepts/security/pod-security-policy/
       ## @param tls.securityContext Init container generate-tls-cert Security context
@@ -1344,7 +1344,7 @@ spec:
       ## If undefined (the default) or set to null, no storageClassName spec is
       ## set, choosing the default provisioner.
       ##
-      storageClass: "do-block-storage"
+      storageClass: "do-block-storage-xfs"
       ## @param persistence.accessModes PV Access Mode
       ##
       accessModes:
@@ -1388,7 +1388,7 @@ spec:
     persistentVolumeClaimRetentionPolicy:
       ## @param persistentVolumeClaimRetentionPolicy.enabled Enable Persistent volume retention policy for MongoDB(&reg;) Statefulset
       ##
-      enabled: false
+      enabled: true
       ## @param persistentVolumeClaimRetentionPolicy.whenScaled Volume retention behavior when the replica count of the StatefulSet is reduced
       ##
       whenScaled: Retain
@@ -1509,7 +1509,7 @@ spec:
           ## If undefined (the default) or set to null, no storageClassName spec is
           ## set, choosing the default provisioner.
           ##
-          storageClass: "do-block-storage"
+          storageClass: "do-block-storage-xfs"
           ## @param backup.cronjob.storage.accessModes PV Access Mode
           ##
           accessModes:
@@ -1565,7 +1565,7 @@ spec:
       ## that allows MongoDB(&reg;) pods querying the K8s API
       ## this needs to be set to 'true' to enable the mongo-labeler sidecar primary mongodb discovery
       ##
-      create: false
+      create: true
       ## @param rbac.rules Custom rules to create following the role specification
       ## The example below needs to be uncommented to use the 'mongo-labeler' sidecar for dynamic discovery of the primary mongodb pod:
       ## rules:
@@ -2378,7 +2378,7 @@ spec:
         ## If undefined (the default) or set to null, no storageClassName spec is
         ## set, choosing the default provisioner.
         ##
-        storageClass: "do-block-storage"
+        storageClass: "do-block-storage-xfs"
         ## @param hidden.persistence.accessModes PV Access Mode
         ##
         accessModes:
@@ -2439,7 +2439,7 @@ spec:
     metrics:
       ## @param metrics.enabled Enable using a sidecar Prometheus exporter
       ##
-      enabled: false
+      enabled: true
       ## Bitnami MongoDB(&reg;) Promtheus Exporter image
       ## ref: https://hub.docker.com/r/bitnami/mongodb-exporter/tags/
       ## @param metrics.image.registry [default: REGISTRY_NAME] MongoDB(&reg;) Prometheus exporter image registry
