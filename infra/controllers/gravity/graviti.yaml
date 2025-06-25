@@ -702,13 +702,13 @@ spec:
             hosts:
               - apim.letsgetyoufood.no
             annotations:
-            #  kubernetes.io/ingress.class: nginx
-            #  nginx.ingress.kubernetes.io/ssl-redirect: "false"
+              # kubernetes.io/ingress.class: nginx
+              # nginx.ingress.kubernetes.io/ssl-redirect: "false"
               nginx.ingress.kubernetes.io/enable-rewrite-log: "true"
               kubernetes.io/app-root: /api
               kubernetes.io/rewrite-target: /api
               nginx.ingress.kubernetes.io/configuration-snippet: "etag on;\nproxy_pass_header ETag;\nproxy_set_header if-match \"\";\n"
-            #  kubernetes.io/tls-acme: "true"
+              # kubernetes.io/tls-acme: "true"
             # tls:
               # Secrets must be manually created in the namespace.
             #  - hosts:
@@ -716,7 +716,7 @@ spec:
             #    secretName: api-custom-cert
         subscription:
           enabled: true
-    #      pre-expiration-notification-schedule: 15,10,5
+    #     pre-expiration-notification-schedule: 15,10,5
       http:
         services:
           core:
