@@ -6,4 +6,5 @@ resources:
   #- ./kubevela
   - ./cert-manager
   - ./ingress
-  - ./tyk
+  # - ./tyk
+  - gravity
