@@ -14,8 +14,17 @@ spec:
       labels:
         app: mongo
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - pool-pno4qqu2l-lns6b
       containers:
-      - name: mongo
+      - name: mongos
         image: mongo
         ports:
           - containerPort: 27017
