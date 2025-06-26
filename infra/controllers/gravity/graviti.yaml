@@ -275,7 +275,7 @@ spec:
       rs: rs0
       rsEnabled: false
       dbhost: mongo.graviti.svc
-      dbname: gravitee
+      dbname: graviti
       dbport: 27017
       connectTimeoutMS: 30000
       auth:
