@@ -279,10 +279,10 @@ spec:
       dbport: 27017
       connectTimeoutMS: 30000
       auth:
-        enabled: false
+        enabled: true
         source: admin
-        username:
-        password:
+        username: root
+        password: root123!
 
     jdbc:
       url: jdbc:mysql://localhost:3306/gravitee
