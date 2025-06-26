@@ -382,7 +382,7 @@ spec:
           ingest: geoip, user_agent # geoip and user_agent plugins are enabled by default
 
     elasticsearch:
-      enabled: false
+      enabled: true
       name: "elasticsearch"
       fullnameOverride: "graviteeio-apim-elasticsearch"
       image:
@@ -394,30 +394,30 @@ spec:
           size: 4Gi
         resources:
           limits:
-            cpu: 500m
-            memory: 1024Mi
+            cpu: 100m
+            memory: 150Mi
           requests:
             cpu: 25m
-            memory: 256Mi
+            memory: 100Mi
       coordinating:
         replicaCount: 2
         resources:
           limits:
-            cpu: 500m
-            memory: 1024Mi
+            cpu: 100m
+            memory: 150Mi
           requests:
             cpu: 25m
-            memory: 256Mi
+            memory: 100Mi
       data:
         replicaCount: 2
         heapSize: 512m
         resources:
           limits:
-            cpu: 1
-            memory: 2048Mi
+            cpu: 100m
+            memory: 150Mi
           requests:
-            cpu: 50m
-            memory: 1024Mi
+            cpu: 25m
+            memory: 100Mi
         persistence:
           size: 20Gi
 
